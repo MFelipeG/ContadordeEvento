@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contador de Dias</title>
+    <title>Contador de Dias com Lembrete</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,7 +15,7 @@
         }
 
         .container {
-            max-width: 400px;
+            max-width: 500px;
             margin: auto;
             padding: 20px;
             background: #1e1e1e;
@@ -56,40 +56,86 @@
             margin-top: 20px;
             font-size: 18px;
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Contador de Dias</h1>
-        <p>Escolha uma data para saber quantos dias faltam até lá:</p>
-        <input type="date" id="dateInput">
+        <p>Escolha as datas para calcular a diferença entre elas:</p>
+        <label for="startDate">Data Inicial:</label>
+        <input type="date" id="startDate">
+        
+        <label for="endDate">Data Final:</label>
+        <input type="date" id="endDate">
+
         <button onclick="calcularDias()">Calcular</button>
+
         <p id="result"></p>
+
+        <button id="addCalendarBtn" class="hidden" onclick="adicionarAoCalendario()">Adicionar ao Google Agenda</button>
+
+        <br><br>
+
+        <label for="email">Receber lembrete por e-mail:</label>
+        <input type="email" id="email" placeholder="Digite seu e-mail">
+        <button onclick="enviarEmail()">Receber Lembrete</button>
+
+        <p id="emailResult"></p>
     </div>
 
     <script>
         function calcularDias() {
-            const dateInput = document.getElementById("dateInput").value;
-            if (!dateInput) {
-                document.getElementById("result").innerText = "Por favor, escolha uma data!";
+            const startDate = new Date(document.getElementById("startDate").value);
+            const endDate = new Date(document.getElementById("endDate").value);
+
+            if (!startDate || !endDate) {
+                document.getElementById("result").innerText = "Por favor, escolha ambas as datas!";
                 return;
             }
 
-            const eventDate = new Date(dateInput);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            eventDate.setHours(0, 0, 0, 0);
+            if (endDate < startDate) {
+                document.getElementById("result").innerText = "A data final deve ser maior que a inicial!";
+                return;
+            }
 
-            const timeDifference = eventDate - today;
+            const timeDifference = endDate - startDate;
             const daysRemaining = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
 
-            if (daysRemaining > 0) {
-                document.getElementById("result").innerText = `Faltam ${daysRemaining} dias para a data escolhida!`;
-            } else if (daysRemaining === 0) {
-                document.getElementById("result").innerText = "O evento é hoje!";
-            } else {
-                document.getElementById("result").innerText = "Essa data já passou!";
+            document.getElementById("result").innerText = `Faltam ${daysRemaining} dias entre as datas escolhidas!`;
+
+            // Exibir o botão de adicionar ao calendário
+            document.getElementById("addCalendarBtn").classList.remove("hidden");
+        }
+
+        function adicionarAoCalendario() {
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+
+            if (!startDate || !endDate) return;
+
+            const startFormatted = startDate.replace(/-/g, '');
+            const endFormatted = endDate.replace(/-/g, '');
+
+            const googleCalendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=Evento+Importante&dates=${startFormatted}/${endFormatted}&details=Lembrete+do+contador+de+dias&sf=true&output=xml`;
+            
+            window.open(googleCalendarUrl, '_blank');
+        }
+
+        function enviarEmail() {
+            const email = document.getElementById("email").value;
+            const resultMessage = document.getElementById("emailResult");
+
+            if (!email) {
+                resultMessage.innerText = "Por favor, insira um e-mail válido!";
+                return;
             }
+
+            // Simulação de envio (substituir por API real)
+            resultMessage.innerText = "Lembrete agendado! (Integração de e-mail necessária)";
         }
     </script>
 </body>

@@ -5,26 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contador de Dias com Lembrete</title>
     <style>
+        :root {
+            --bg-color: #121212;
+            --text-color: white;
+            --input-bg: #222;
+            --button-bg: #4CAF50;
+            --button-hover: #45a049;
+            --box-shadow: rgba(255, 255, 255, 0.2);
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-color: #f4f4f4;
+                --text-color: black;
+                --input-bg: #fff;
+                --button-bg: #28a745;
+                --button-hover: #218838;
+                --box-shadow: rgba(0, 0, 0, 0.2);
+            }
+        }
+
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #121212;
-            color: white;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
             padding: 20px;
+            transition: background 0.5s, color 0.5s;
         }
 
         .container {
             max-width: 500px;
             margin: auto;
             padding: 20px;
-            background: #1e1e1e;
+            background: var(--input-bg);
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 10px var(--box-shadow);
+            transition: background 0.5s, box-shadow 0.5s;
         }
 
         h1 {
-            color: #4CAF50;
+            color: var(--button-bg);
         }
 
         input, button {
@@ -34,22 +56,24 @@
             border-radius: 5px;
             border: none;
             font-size: 16px;
+            transition: 0.3s;
         }
 
         input {
-            background: #222;
-            color: white;
-            border: 1px solid #4CAF50;
+            background: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid var(--button-bg);
         }
 
         button {
-            background-color: #4CAF50;
+            background-color: var(--button-bg);
             color: white;
             cursor: pointer;
+            transition: 0.3s;
         }
 
         button:hover {
-            background-color: #45a049;
+            background-color: var(--button-hover);
         }
 
         #result {
@@ -60,10 +84,23 @@
         .hidden {
             display: none;
         }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container fade-in">
         <h1>Contador de Dias</h1>
         <p>Escolha as datas para calcular a diferença entre elas:</p>
         <label for="startDate">Data Inicial:</label>
@@ -109,6 +146,9 @@
 
             // Exibir o botão de adicionar ao calendário
             document.getElementById("addCalendarBtn").classList.remove("hidden");
+
+            // Agendar notificação
+            agendarNotificacao(endDate, daysRemaining);
         }
 
         function adicionarAoCalendario() {
@@ -134,8 +174,29 @@
                 return;
             }
 
-            // Simulação de envio (substituir por API real)
             resultMessage.innerText = "Lembrete agendado! (Integração de e-mail necessária)";
+        }
+
+        function agendarNotificacao(endDate, daysRemaining) {
+            if (!("Notification" in window)) {
+                console.log("Este navegador não suporta notificações.");
+                return;
+            }
+
+            if (Notification.permission === "granted") {
+                setTimeout(() => {
+                    new Notification("Lembrete!", {
+                        body: `Faltam ${daysRemaining} dias para seu evento!`,
+                        icon: "https://cdn-icons-png.flaticon.com/512/2275/2275391.png"
+                    });
+                }, 5000);
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        agendarNotificacao(endDate, daysRemaining);
+                    }
+                });
+            }
         }
     </script>
 </body>

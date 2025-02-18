@@ -10,4 +10,87 @@
             text-align: center;
             background-color: #121212;
             color: white;
-            margin:
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            background: #1e1e1e;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            color: #4CAF50;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+        }
+
+        input {
+            background: #222;
+            color: white;
+            border: 1px solid #4CAF50;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Contador de Dias</h1>
+        <p>Escolha uma data para saber quantos dias faltam até lá:</p>
+        <input type="date" id="dateInput">
+        <button onclick="calcularDias()">Calcular</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        function calcularDias() {
+            const dateInput = document.getElementById("dateInput").value;
+            if (!dateInput) {
+                document.getElementById("result").innerText = "Por favor, escolha uma data!";
+                return;
+            }
+
+            const eventDate = new Date(dateInput);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            eventDate.setHours(0, 0, 0, 0);
+
+            const timeDifference = eventDate - today;
+            const daysRemaining = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+
+            if (daysRemaining > 0) {
+                document.getElementById("result").innerText = `Faltam ${daysRemaining} dias para a data escolhida!`;
+            } else if (daysRemaining === 0) {
+                document.getElementById("result").innerText = "O evento é hoje!";
+            } else {
+                document.getElementById("result").innerText = "Essa data já passou!";
+            }
+        }
+    </script>
+</body>
+</html>
